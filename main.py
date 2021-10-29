@@ -13,7 +13,6 @@ class Window(Gtk.Window):
 
         self.set_titlebar(self.header)
 
-        # entry with clear and search icon
         entry = Gtk.Entry()
         entry.set_placeholder_text("Search")
         entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, "edit-find-symbolic")
@@ -24,7 +23,6 @@ class Window(Gtk.Window):
 
         entry.connect("icon-press", self.on_icon_click)
 
-        # show image from its path
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
         filename="./download.jpeg", 
         width=1000, 
@@ -32,9 +30,7 @@ class Window(Gtk.Window):
         preserve_aspect_ratio=True)
 
         self.image = Gtk.Image.new_from_pixbuf(pixbuf)
-        # decrease image size
         self.image.set_size_request(100, 100)
-        # change source of image by using pixbuf
         print(self.image.set_from_pixbuf)
         self.add(self.image)
 
@@ -45,7 +41,6 @@ class Window(Gtk.Window):
         if(icon_pos == Gtk.EntryIconPosition.SECONDARY):
             widget.set_text("")
         else:
-            # get text from entry and search wallpaper at wallhaven.cc
             text = widget.get_text()
             from urllib.request import urlopen,Request  
             from bs4 import BeautifulSoup
@@ -57,21 +52,15 @@ class Window(Gtk.Window):
             from io import BytesIO
             from urllib.request import urlopen
 
-            # get the url of the image
             url = "https://wallhaven.cc/search?q=" + text + "&categories=110&purity=100&sorting=random&order=desc"
-            # get the html of the page
             print(url)
             page = requests.get(url)
-            # parse the html
             soup = BeautifulSoup(page.text, 'html.parser')
-            # get the image url
             image_url = soup.find('img', {'class': 'lazyload'})["data-src"]
             print(image_url)
-            # download the image and save it in the current directory with the name of the search text
             image_name = "fetched_image" + ".jpg"
             image_path = os.path.join(os.getcwd(), image_name)
             print(image_path)
-            # download the image
             with open(image_path, 'wb') as handle:
                 response = requests.get(image_url, stream=True)
                 if not response.ok:
@@ -80,14 +69,10 @@ class Window(Gtk.Window):
                     if not block:
                         break
                     handle.write(block)
-            # open the image
             image = Image.open(image_path)
 
-            # resize the image and don't decrease file quility
             image = image.resize((800, 800), Image.ADAPTIVE)
-            # save the image
             image.save(image_path)
-            # change self.image image to the downloaded image
             
             self.image.set_from_file(image_path)
 
